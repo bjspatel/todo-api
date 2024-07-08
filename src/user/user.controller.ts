@@ -1,3 +1,6 @@
+import { Public } from 'src/decorators/public.decorator';
+import { UserId } from 'src/decorators/user-id.decorator';
+
 import {
   Body,
   Controller,
@@ -7,14 +10,13 @@ import {
   Put,
   ValidationPipe,
 } from '@nestjs/common';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { CreateUserRequestDto } from './types/create-user-request.dto';
 import { UserService } from './user.service';
-import { Public } from 'src/decorators/public.decorator';
-import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('User')
-@Controller('user')
+@Controller('users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
@@ -28,6 +30,12 @@ export class UserController {
   @Get()
   async findAll() {
     return this.userService.findAll();
+  }
+
+  @ApiBearerAuth()
+  @Get('me')
+  async getMe(@UserId() userId: string) {
+    return this.userService.findOne(userId);
   }
 
   @ApiBearerAuth()

@@ -6,5 +6,7 @@ export class AuthDto {
     type: String,
     required: true,
   })
-  token: string;
+  accessToken: string;
+
+  refreshToken: string;
 }

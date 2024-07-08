@@ -1,6 +1,5 @@
 import * as bcrypt from 'bcrypt';
-import { Model } from 'mongoose';
-import { UserDto } from 'src/user/types/user.dto';
+import { Model, Types } from 'mongoose';
 import { User } from 'src/user/types/user.schema';
 
 import { Injectable, UnauthorizedException } from '@nestjs/common';
@@ -17,32 +16,39 @@ export class AuthService {
     private readonly jwtService: JwtService,
   ) {}
 
+  private async getTokens(userId: Types.ObjectId): Promise<AuthDto> {
+    const payload = { sub: userId };
+    const [accessToken, refreshToken] = await Promise.all([
+      this.jwtService.signAsync(payload, { expiresIn: '15m' }),
+      this.jwtService.signAsync(payload, { expiresIn: '15d' }),
+    ]);
+    return {
+      accessToken,
+      refreshToken,
+    };
+  }
+
   async login(requestDto: LogInRequestDto): Promise<AuthDto> {
     const { email, password } = requestDto;
-    const user = await this.userModel.findOne({
-      email,
-    });
+    const user = await this.userModel.findOne({ email });
+    if (!user) {
+      throw new UnauthorizedException();
+    }
     const isMatched = await bcrypt.compare(password, user.password);
     if (!isMatched) {
       throw new UnauthorizedException();
     }
-    const payload = {
-      sub: user._id,
-    };
-    const token = await this.jwtService.signAsync(payload);
-    console.log('User ', user, 'Payload ', payload, 'Token ', token);
-    return {
-      token,
-    };
+    return this.getTokens(user._id);
   }
 
-  async getMe(userId: string): Promise<UserDto> {
-    const user = await this.userModel.findById(userId);
-    return {
-      id: user._id,
-      email: user.email,
-      name: user.name,
-      avatar: user.avatar,
-    };
+  async refreshToken(oldRefreshToken: string): Promise<AuthDto> {
+    const payload = await this.jwtService.verifyAsync(oldRefreshToken, {
+      ignoreExpiration: true,
+    });
+    const user = await this.userModel.findById(payload.sub);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    return this.getTokens(user._id);
   }
 }
