@@ -7,7 +7,10 @@ async function bootstrap() {
     snapshot: true,
   });
 
-  const swaggerConfig = new DocumentBuilder().setTitle('Todo API').build();
+  const swaggerConfig = new DocumentBuilder()
+    .setTitle('Todo API')
+    .addBearerAuth()
+    .build();
   const document = SwaggerModule.createDocument(app, swaggerConfig);
   SwaggerModule.setup('api', app, document);
 

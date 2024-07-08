@@ -2,7 +2,9 @@ import { ApiProperty } from '@nestjs/swagger';
 import {
   IsEmail,
   IsNotEmpty,
+  IsOptional,
   IsString,
+  IsUrl,
   Matches,
   MaxLength,
   MinLength,
@@ -43,6 +45,10 @@ export class CreateUserRequestDto {
   @ApiProperty({
     description: 'The avatar of the User',
     type: String,
+    required: false,
   })
+  @IsOptional()
+  @IsString()
+  @IsUrl({ require_protocol: true })
   avatar?: string;
 }

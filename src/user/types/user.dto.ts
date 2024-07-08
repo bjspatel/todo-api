@@ -1,11 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Types } from 'mongoose';
 
 export class UserDto {
   @ApiProperty({
     description: 'The id of the User',
     type: String,
   })
-  id: string;
+  id: Types.ObjectId;
 
   @ApiProperty({
     description: 'The email of the User',
@@ -23,5 +24,5 @@ export class UserDto {
     description: 'The avatar of the User',
     type: String,
   })
-  avatar: string;
+  avatar?: string;
 }
