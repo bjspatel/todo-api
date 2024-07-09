@@ -52,4 +52,11 @@ export class AuthController {
     });
     res.send({ accessToken });
   }
+
+  @Public()
+  @Post('logout')
+  async logout(@Res() res: Response) {
+    res.clearCookie('refreshToken');
+    res.send(true);
+  }
 }
