@@ -23,6 +23,7 @@ export class AuthService {
       this.jwtService.signAsync(payload, { expiresIn: '15d' }),
     ]);
     return {
+      userId: userId.toString(),
       accessToken,
       refreshToken,
     };

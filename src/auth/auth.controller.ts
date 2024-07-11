@@ -26,14 +26,14 @@ export class AuthController {
     @Body(new ValidationPipe()) requestDto: LogInRequestDto,
     @Res() res: Response,
   ) {
-    const { accessToken, refreshToken } =
+    const { userId, accessToken, refreshToken } =
       await this.authService.login(requestDto);
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       sameSite: 'strict',
       secure: true,
     });
-    res.send({ accessToken });
+    res.send({ userId, accessToken });
   }
 
   @Public()
@@ -43,14 +43,14 @@ export class AuthController {
     if (!oldRefreshToken) {
       return res.status(401).json({ message: 'No refresh token found' });
     }
-    const { accessToken, refreshToken } =
+    const { userId, accessToken, refreshToken } =
       await this.authService.refreshToken(oldRefreshToken);
     res.cookie('refreshToken', refreshToken, {
       httpOnly: true,
       sameSite: 'strict',
       secure: true,
     });
-    res.send({ accessToken });
+    res.send({ userId, accessToken });
   }
 
   @Public()
