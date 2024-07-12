@@ -2,6 +2,8 @@ import { Types } from 'mongoose';
 
 import { ApiProperty } from '@nestjs/swagger';
 
+export type TaskStatus = 'to-do' | 'in-progress' | 'done' | 'canceled';
+
 export class TaskDto {
   @ApiProperty({
     description: 'The id of the Task',
@@ -24,8 +26,9 @@ export class TaskDto {
   @ApiProperty({
     description: 'The status of the Task',
     type: String,
+    enum: ['to-do', 'in-progress', 'done', 'canceled'],
   })
-  status: string;
+  status: TaskStatus;
 
   @ApiProperty({
     description: 'Creation date of the Task',

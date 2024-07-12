@@ -13,6 +13,7 @@ export class TaskTransformerService {
   ): CreateTaskDbRequestDto {
     return {
       name: createTaskRequestDto.name,
+      status: createTaskRequestDto.status,
       userId: userId,
     };
   }
