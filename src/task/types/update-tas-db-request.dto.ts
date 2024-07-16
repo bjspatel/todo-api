@@ -1,8 +1,9 @@
 import { TaskProgress } from './task.dto';
 
-export class CreateTaskDbRequestDto {
+export class UpdateTaskDbRequestDto {
   name: string;
+  isDone: boolean;
   progress: TaskProgress;
   dueAt: number;
-  userId: string;
+  updatedAt: number;
 }

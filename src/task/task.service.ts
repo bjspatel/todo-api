@@ -1,4 +1,4 @@
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 
 import { Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -7,6 +7,7 @@ import { TaskTransformerService } from './task-transformer.service';
 import { CreateTaskRequestDto } from './types/create-task-request.dto';
 import { TaskDto } from './types/task.dto';
 import { Task } from './types/task.schema';
+import { UpdateTaskRequestDto } from './types/update-task-request.dto';
 
 @Injectable()
 export class TaskService {
@@ -28,20 +29,20 @@ export class TaskService {
   }
 
   async findAll(userId: string): Promise<TaskDto[]> {
-    const tasks = await this.taskModel.find({ userId }).sort({ createdAt: -1 });
+    const tasks = await this.taskModel
+      .find({ userId: new Types.ObjectId(userId), deletedAt: null })
+      .sort({ createdAt: -1 });
     return tasks.map(this.transformService.toTaskDtoFromDocument);
   }
 
   async update(
     userId: string,
     taskId: string,
-    requestDto: CreateTaskRequestDto,
+    requestDto: UpdateTaskRequestDto,
   ): Promise<TaskDto> {
     console.log('Update task called with: ', userId, taskId, requestDto);
-    const dbRequest = this.transformService.sanitizeCreateTaskRequestDto(
-      userId,
-      requestDto,
-    );
+    const dbRequest =
+      this.transformService.sanitizeUpdateTaskRequestDto(requestDto);
     const updatedDbTask = await this.taskModel.findOneAndUpdate(
       { _id: taskId, userId },
       dbRequest,
@@ -51,6 +52,13 @@ export class TaskService {
   }
 
   async delete(taskId: string, userId: string) {
-    this.taskModel.findOneAndDelete({ _id: taskId, userId });
+    const query = {
+      _id: new Types.ObjectId(taskId),
+      userId: new Types.ObjectId(userId),
+    };
+    const deleteResult = await this.taskModel.findOneAndUpdate(query, {
+      deletedAt: Date.now(),
+    });
+    console.log('Delete result: ', query, deleteResult);
   }
 }

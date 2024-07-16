@@ -1,5 +1,6 @@
 import { Schema, Prop, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument, Schema as MongooseSchema } from 'mongoose';
+import { TaskProgress } from './task.dto';
 
 @Schema()
 export class Task {
@@ -15,28 +16,40 @@ export class Task {
 
   @Prop({
     required: true,
-    type: String,
-    enum: ['to-do', 'in-progress', 'done', 'canceled'],
-    default: 'todo',
+    type: Boolean,
+    default: false,
   })
-  status: string;
+  isDone: boolean;
+
+  @Prop({
+    required: true,
+    type: Number,
+    enum: [0, 25, 50, 75, 100],
+    default: 0,
+  })
+  progress: TaskProgress;
+
+  @Prop({
+    required: false,
+  })
+  dueAt: number;
 
   @Prop({
     required: false,
     default: Date.now,
   })
-  createdAt: Date;
+  createdAt: number;
 
   @Prop({
     required: false,
     default: Date.now,
   })
-  updatedAt: Date;
+  updatedAt: number;
 
   @Prop({
     required: false,
   })
-  deletedAt: Date;
+  deletedAt: number;
 }
 
 export const TaskSchema = SchemaFactory.createForClass(Task);
