@@ -14,6 +14,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 
 import { CreateUserRequestDto } from './types/create-user-request.dto';
 import { UserService } from './user.service';
+import { UpdateUserRequestDto } from './types/update-user-request.dto';
 
 @ApiTags('User')
 @Controller('users')
@@ -42,6 +43,15 @@ export class UserController {
   @Get(':id')
   async findOne(@Param('id') userId: string) {
     return this.userService.findOne(userId);
+  }
+
+  @ApiBearerAuth()
+  @Put('me')
+  async updateMe(
+    @UserId() userId: string,
+    @Body(new ValidationPipe()) requestDto: UpdateUserRequestDto,
+  ) {
+    return this.userService.update(userId, requestDto);
   }
 
   @ApiBearerAuth()

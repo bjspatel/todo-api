@@ -9,6 +9,7 @@ import { AUTH_CONSTANTS } from './auth.constants';
 import { AuthController } from './auth.controller';
 import { AuthGuard } from './auth.guard';
 import { AuthService } from './auth.service';
+import { UserModule } from 'src/user/user.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { AuthService } from './auth.service';
       signOptions: { expiresIn: '1d' },
     }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    UserModule,
   ],
   controllers: [AuthController],
   providers: [

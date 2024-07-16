@@ -26,6 +26,11 @@ export class User {
 
   @Prop({
     required: false,
+  })
+  about: string;
+
+  @Prop({
+    required: false,
     default: Date.now,
   })
   createdAt: Date;

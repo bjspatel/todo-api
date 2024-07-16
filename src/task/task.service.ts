@@ -32,6 +32,24 @@ export class TaskService {
     return tasks.map(this.transformService.toTaskDtoFromDocument);
   }
 
+  async update(
+    userId: string,
+    taskId: string,
+    requestDto: CreateTaskRequestDto,
+  ): Promise<TaskDto> {
+    console.log('Update task called with: ', userId, taskId, requestDto);
+    const dbRequest = this.transformService.sanitizeCreateTaskRequestDto(
+      userId,
+      requestDto,
+    );
+    const updatedDbTask = await this.taskModel.findOneAndUpdate(
+      { _id: taskId, userId },
+      dbRequest,
+      { new: true },
+    );
+    return this.transformService.toTaskDtoFromDocument(updatedDbTask);
+  }
+
   async delete(taskId: string, userId: string) {
     this.taskModel.findOneAndDelete({ _id: taskId, userId });
   }

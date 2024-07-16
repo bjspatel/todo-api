@@ -1,6 +1,14 @@
 import { UserId } from 'src/decorators/user-id.decorator';
 
-import { Body, Controller, Delete, Get, Param, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Post,
+  Put,
+} from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
 import { TaskService } from './task.service';
@@ -11,7 +19,6 @@ import { CreateTaskRequestDto } from './types/create-task-request.dto';
 export class TaskController {
   constructor(private readonly taskService: TaskService) {}
 
-  // Implement the create method
   @Post()
   async create(
     @UserId() userId,
@@ -23,6 +30,15 @@ export class TaskController {
   @Get()
   async findAll(@UserId() userId) {
     return this.taskService.findAll(userId);
+  }
+
+  @Put(':id')
+  async update(
+    @UserId() userId,
+    @Param('id') taskId: string,
+    @Body() createTaskRequestDto: CreateTaskRequestDto,
+  ) {
+    return this.taskService.update(userId, taskId, createTaskRequestDto);
   }
 
   @Delete(':id')

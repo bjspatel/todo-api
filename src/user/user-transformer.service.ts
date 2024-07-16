@@ -14,6 +14,7 @@ export class UserTransformerService {
       email: user.email,
       name: user.name,
       avatar: user.avatar,
+      about: user.about,
     };
   }
   sanitizeCreateUserRequest(
@@ -34,9 +35,16 @@ export class UserTransformerService {
     if (updateUserRequestDto.name) {
       sanitizedRequest.name = updateUserRequestDto.name;
     }
+    if (updateUserRequestDto.email) {
+      sanitizedRequest.email = updateUserRequestDto.email;
+    }
     if (updateUserRequestDto.avatar) {
       sanitizedRequest.avatar = updateUserRequestDto.avatar;
     }
+    if (updateUserRequestDto.about) {
+      sanitizedRequest.about = updateUserRequestDto.about;
+    }
+
     return sanitizedRequest;
   }
 }

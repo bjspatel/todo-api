@@ -1,6 +1,7 @@
 import * as bcrypt from 'bcrypt';
-import { Model, Types } from 'mongoose';
-import { User } from 'src/user/types/user.schema';
+import { Model } from 'mongoose';
+import { User, UserDocument } from 'src/user/types/user.schema';
+import { UserTransformerService } from 'src/user/user-transformer.service';
 
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -14,16 +15,17 @@ export class AuthService {
   constructor(
     @InjectModel(User.name) private readonly userModel: Model<User>,
     private readonly jwtService: JwtService,
+    private readonly userTransformerService: UserTransformerService,
   ) {}
 
-  private async getTokens(userId: Types.ObjectId): Promise<AuthDto> {
-    const payload = { sub: userId };
+  private async getTokens(userDoc: UserDocument): Promise<AuthDto> {
+    const payload = { sub: userDoc._id };
     const [accessToken, refreshToken] = await Promise.all([
       this.jwtService.signAsync(payload, { expiresIn: '15m' }),
       this.jwtService.signAsync(payload, { expiresIn: '15d' }),
     ]);
     return {
-      userId: userId.toString(),
+      user: this.userTransformerService.toUserDto(userDoc),
       accessToken,
       refreshToken,
     };
@@ -39,7 +41,7 @@ export class AuthService {
     if (!isMatched) {
       throw new UnauthorizedException();
     }
-    return this.getTokens(user._id);
+    return this.getTokens(user);
   }
 
   async refreshToken(oldRefreshToken: string): Promise<AuthDto> {
@@ -50,6 +52,24 @@ export class AuthService {
     if (!user) {
       throw new UnauthorizedException();
     }
-    return this.getTokens(user._id);
+    return this.getTokens(user);
+  }
+
+  async updatePassword(
+    userId: string,
+    currentPassword: string,
+    newPassword: string,
+  ) {
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new UnauthorizedException();
+    }
+    const isMatched = await bcrypt.compare(currentPassword, user.password);
+    if (!isMatched) {
+      throw new UnauthorizedException();
+    }
+    user.password = await bcrypt.hash(newPassword, 10);
+    const updatedUser = await user.save();
+    return this.userTransformerService.toUserDto(updatedUser);
   }
 }

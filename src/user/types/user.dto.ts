@@ -25,4 +25,10 @@ export class UserDto {
     type: String,
   })
   avatar?: string;
+
+  @ApiProperty({
+    description: 'About the User',
+    type: String,
+  })
+  about?: string;
 }

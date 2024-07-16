@@ -6,6 +6,7 @@ import {
   Controller,
   Get,
   Post,
+  Put,
   Req,
   Res,
   ValidationPipe,
@@ -14,6 +15,7 @@ import { ApiTags } from '@nestjs/swagger';
 
 import { AuthService } from './auth.service';
 import { LogInRequestDto } from './types/login-request.dto';
+import { UserId } from 'src/decorators/user-id.decorator';
 
 @ApiTags('Auth')
 @Controller('auth')
@@ -26,14 +28,13 @@ export class AuthController {
     @Body(new ValidationPipe()) requestDto: LogInRequestDto,
     @Res() res: Response,
   ) {
-    const { userId, accessToken, refreshToken } =
-      await this.authService.login(requestDto);
-    res.cookie('refreshToken', refreshToken, {
+    const authDto = await this.authService.login(requestDto);
+    res.cookie('refreshToken', authDto.refreshToken, {
       httpOnly: true,
       sameSite: 'strict',
       secure: true,
     });
-    res.send({ userId, accessToken });
+    res.send(authDto);
   }
 
   @Public()
@@ -43,14 +44,26 @@ export class AuthController {
     if (!oldRefreshToken) {
       return res.status(401).json({ message: 'No refresh token found' });
     }
-    const { userId, accessToken, refreshToken } =
-      await this.authService.refreshToken(oldRefreshToken);
-    res.cookie('refreshToken', refreshToken, {
+    const authDto = await this.authService.refreshToken(oldRefreshToken);
+    res.cookie('refreshToken', authDto.refreshToken, {
       httpOnly: true,
       sameSite: 'strict',
       secure: true,
     });
-    res.send({ userId, accessToken });
+    res.send(authDto);
+  }
+
+  @Put('password')
+  async updatePassword(
+    @UserId() userId: string,
+    @Body('currentPassword') currentPassword: string,
+    @Body('newPassword') newPassword: string,
+  ) {
+    return this.authService.updatePassword(
+      userId,
+      currentPassword,
+      newPassword,
+    );
   }
 
   @Public()

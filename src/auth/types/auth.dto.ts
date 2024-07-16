@@ -1,12 +1,13 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { UserDto } from 'src/user/types/user.dto';
 
 export class AuthDto {
   @ApiProperty({
-    description: 'The id of the User',
-    type: String,
+    description: 'The User profile',
+    type: UserDto,
     required: true,
   })
-  userId: string;
+  user: UserDto;
 
   @ApiProperty({
     description: 'The JWT token',
