@@ -1,6 +1,6 @@
 # ToDo API
 
-This is a ToDo application API built using NestJS. The application uses MongoDB as the database and serves endpoints for managing tasks, users, and authentication. For protecting the endpoints, authentication is done with the help of short-living access-token, and long-living refresh-token. It also provides Swagger documentation for the API.
+This is a ToDo application API built using **NestJS**, and **MongoDB**. The application serves endpoints for managing tasks, users, and authentication. For protecting the endpoints, authentication is done with the help of short-living access-token, and long-living refresh-token. It also provides Swagger documentation for the API.
 
 ## Table of Contents
 - [ToDo API](#todo-api)
@@ -33,6 +33,10 @@ This is a ToDo application API built using NestJS. The application uses MongoDB 
     FRONTEND_URL=http://localhost:5173
     PORT=8080
     ```
+
+     - `MONGODB_URI` is the connection string for MongoDB.
+     - `FRONTEND_URL` is used for CORS configuration.
+     - `PORT` is the port on which the application will run.
 
 3. Start the application:
     ```sh
