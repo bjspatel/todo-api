@@ -52,7 +52,7 @@ The API is documented using the Swagger module. Once the application is running,
 
 
 ## Project Structure
-
+```
 TODO/
 ├── src/
 │ ├── auth/ # Authentication module
@@ -63,3 +63,4 @@ TODO/
 │ └── main.ts # Entry point
 ├── .env # Environment variables file
 ...
+```
