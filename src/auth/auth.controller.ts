@@ -42,7 +42,7 @@ export class AuthController {
   async refreshToken(@Req() req: Request, @Res() res: Response) {
     const oldRefreshToken = req.cookies?.refreshToken;
     if (!oldRefreshToken) {
-      return res.status(401).json({ message: 'No refresh token found' });
+      return res.status(400).json({ message: 'No refresh token found' });
     }
     const authDto = await this.authService.refreshToken(oldRefreshToken);
     res.cookie('refreshToken', authDto.refreshToken, {
